@@ -7,25 +7,24 @@
     <style>
         :root {
             --primary: #6366f1;
-            --secondary: #f43f5e;
             --bg: #f1f5f9;
             --dark: #0f172a;
         }
 
         body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+            font-family: 'Inter', sans-serif; 
             background-color: var(--bg); 
-            color: var(--dark);
             margin: 0; 
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         header {
             width: 100%;
-            padding: 100px 20px;
+            padding: 80px 20px;
             text-align: center;
             background: linear-gradient(135deg, #4f46e5, #ec4899);
             color: white;
@@ -34,11 +33,11 @@
 
         .intro-container {
             max-width: 800px;
-            margin: -60px 20px 40px 20px;
+            margin: -40px 20px 40px 20px;
             background: white;
             padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             text-align: center;
             z-index: 5;
         }
@@ -49,18 +48,18 @@
             gap: 30px;
             max-width: 1100px;
             width: 90%;
-            margin-bottom: 100px;
+            margin: 40px 0 100px 0;
         }
 
         #overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.7s ease; /* Slightly slower fade */
+            transition: opacity 0.8s ease;
             z-index: 50;
         }
 
@@ -75,172 +74,194 @@
             border-radius: 24px;
             padding: 30px;
             cursor: pointer;
-            position: relative;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.05);
-            z-index: 10;
+            transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        /* The Ghost card helps keep the grid stable while the real card is floating */
+        .card.is-ghost {
+            visibility: hidden;
+            pointer-events: none;
         }
 
-        /* THE REFINED FLOW ANIMATION */
-        .card.active {
+        /* THE FLOATING CARD STATE */
+        .card.is-floating {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(1.05);
-            width: 90vw;
-            height: 80vh;
-            max-width: 850px;
             z-index: 100;
-            cursor: default;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-            justify-content: flex-start;
-            overflow-y: auto;
-            
-            /* Slower timing (0.8s) and a gentler 'bounce' (1.1 instead of 1.56) */
-            transition: all 0.8s cubic-bezier(0.34, 1.1, 0.64, 1);
-        }
-
-        .card h3 { 
-            color: var(--primary); 
-            font-size: 1.5rem; 
             margin: 0;
-            transition: all 0.4s ease;
+            /* Cubic bezier adjusted for a very soft landing */
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
-        .card .full-content {
+        .card.is-expanded {
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 90vw !important;
+            height: 80vh !important;
+            max-width: 850px !important;
+            cursor: default;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            justify-content: flex-start;
+            padding: 50px;
+        }
+
+        .full-content {
             display: none;
             opacity: 0;
             text-align: left;
-            width: 100%;
-            margin-top: 20px;
+            margin-top: 30px;
             line-height: 1.8;
+            width: 100%;
         }
 
-        .card.active .full-content {
+        .card.is-expanded .full-content {
             display: block;
-            opacity: 1;
-            animation: fadeIn 1s ease forwards;
-        }
-
-        .card.active h3 {
-            font-size: 2.2rem;
-            margin-top: 10px;
+            animation: fadeIn 0.6s ease 0.4s forwards;
         }
 
         .close-btn {
-            display: none;
             position: absolute;
-            top: 25px;
+            top: 20px;
             right: 25px;
             font-size: 30px;
             cursor: pointer;
             color: #cbd5e1;
-            line-height: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .card.active .close-btn { display: block; }
-        .close-btn:hover { color: var(--secondary); }
+        .card.is-expanded .close-btn { opacity: 1; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .tag {
-            background: #eef2ff;
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            margin-bottom: 15px;
-        }
+        .tag { background: #eef2ff; color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div id="overlay" onclick="closeCard()"></div>
+<div id="overlay" onclick="closeActiveCard()"></div>
 
 <header>
-    <h1>Portfolio Reflection</h1>
-    <p>Professional Development & Skills</p>
+    <h1>Growth & Reflection</h1>
+    <p>Year-End Portfolio</p>
 </header>
 
 <div class="intro-container">
-    <h2>Introduction</h2>
-    <p>This is my professional journey. Click a card to focus on a specific skill area. Each section includes my self-reflection and the evidence required for the final assessment.</p>
+    <h2>Welcome</h2>
+    <p>Click a card to see the growth animation. The card will expand from its grid position to become a full-screen reflection.</p>
 </div>
 
 <div class="card-grid">
-    <div class="card" onclick="openCard(this)">
-        <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Topic 1</span>
+    <div class="card" onclick="expandCard(this)">
+        <span class="close-btn" onclick="event.stopPropagation(); closeActiveCard()">&times;</span>
+        <span class="tag">Strategy</span>
         <h3>Learning Experience</h3>
         <div class="full-content">
-            <hr style="opacity: 0.1; margin: 20px 0;">
-            <p><strong>Reflection Overview:</strong> Your 1,200-word analysis goes here. Discuss your strategies and how they match your learning plan.</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <h2>Detailed Reflection</h2>
+            <p>Your content here. This transition ensures the user sees exactly where the information came from.</p>
         </div>
     </div>
 
-    <div class="card" onclick="openCard(this)">
-        <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Topic 2</span>
-        <h3>Professional Skills</h3>
+    <div class="card" onclick="expandCard(this)">
+        <span class="close-btn" onclick="event.stopPropagation(); closeActiveCard()">&times;</span>
+        <span class="tag">Skills</span>
+        <h3>Professionalism</h3>
         <div class="full-content">
-            <hr style="opacity: 0.1; margin: 20px 0;">
-            <p>Details about your employability, career office sessions, and workplace strengths.</p>
+            <h2>Workplace Readiness</h2>
+            <p>Reflecting on your employability and career office sessions.</p>
         </div>
     </div>
 
-    <div class="card" onclick="openCard(this)">
-        <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Topic 3</span>
-        <h3>Metacognitive Growth</h3>
+    <div class="card" onclick="expandCard(this)">
+        <span class="close-btn" onclick="event.stopPropagation(); closeActiveCard()">&times;</span>
+        <span class="tag">Evidence</span>
+        <h3>Collaborative Work</h3>
         <div class="full-content">
-            <hr style="opacity: 0.1; margin: 20px 0;">
-            <p>Evidence of how you reflect on your own learning process and adapt to new challenges.</p>
+            <h2>Social Horizon</h2>
+            <p>Organizing study groups and other social skills.</p>
         </div>
     </div>
 
-    <div class="card" onclick="openCard(this)">
-        <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Topic 4</span>
-        <h3>Evidence Gallery</h3>
+    <div class="card" onclick="expandCard(this)">
+        <span class="close-btn" onclick="event.stopPropagation(); closeActiveCard()">&times;</span>
+        <span class="tag">Goals</span>
+        <h3>Future Roadmap</h3>
         <div class="full-content">
-            <hr style="opacity: 0.1; margin: 20px 0;">
-            <p>Place for your 4-10 pieces of evidence (Posters, PPTs, Videos, etc.).</p>
+            <h2>Long-term Objectives</h2>
+            <p>Where you see yourself in the next year.</p>
         </div>
     </div>
 </div>
 
 <script>
-    function openCard(card) {
-        if (card.classList.contains('active')) return;
-        const overlay = document.getElementById('overlay');
-        document.body.style.overflow = 'hidden';
-        overlay.classList.add('active');
-        card.classList.add('active');
+    let activeCard = null;
+    let originalRect = null;
+
+    function expandCard(card) {
+        if (activeCard) return;
+
+        activeCard = card;
+        originalRect = card.getBoundingClientRect();
+
+        // 1. Create a "ghost" to keep the grid from collapsing
+        card.classList.add('is-ghost');
+
+        // 2. Prepare the real card to float
+        const floatingCard = card.cloneNode(true);
+        floatingCard.classList.remove('is-ghost');
+        floatingCard.classList.add('is-floating');
+        
+        // Position it exactly over the original
+        floatingCard.style.top = originalRect.top + 'px';
+        floatingCard.style.left = originalRect.left + 'px';
+        floatingCard.style.width = originalRect.width + 'px';
+        floatingCard.style.height = originalRect.height + 'px';
+        
+        document.body.appendChild(floatingCard);
+        
+        // 3. Trigger the expansion
+        setTimeout(() => {
+            document.getElementById('overlay').classList.add('active');
+            floatingCard.classList.add('is-expanded');
+            document.body.style.overflow = 'hidden';
+        }, 10);
+
+        // Link the close button of the clone
+        floatingCard.querySelector('.close-btn').onclick = (e) => {
+            e.stopPropagation();
+            closeActiveCard(floatingCard);
+        };
     }
 
-    function closeCard() {
-        const activeCard = document.querySelector('.card.active');
-        const overlay = document.getElementById('overlay');
-        if (activeCard) {
-            activeCard.classList.remove('active');
-        }
-        overlay.classList.remove('active');
-        document.body.style.overflow = 'auto';
+    function closeActiveCard(floatingCard) {
+        if (!floatingCard) floatingCard = document.querySelector('.card.is-floating');
+        
+        // 1. Shrink back to original position
+        floatingCard.classList.remove('is-expanded');
+        floatingCard.style.top = originalRect.top + 'px';
+        floatingCard.style.left = originalRect.left + 'px';
+        floatingCard.style.width = originalRect.width + 'px';
+        floatingCard.style.height = originalRect.height + 'px';
+        
+        document.getElementById('overlay').classList.remove('active');
+
+        // 2. After animation finishes, clean up
+        setTimeout(() => {
+            floatingCard.remove();
+            activeCard.classList.remove('is-ghost');
+            activeCard = null;
+            document.body.style.overflow = 'auto';
+        }, 800);
     }
 </script>
 
