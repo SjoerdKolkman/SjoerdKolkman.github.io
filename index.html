@@ -87,21 +87,20 @@
             pointer-events: none;
         }
 
+        /* --- THE FLOATING ENGINE --- */
         .card.is-floating {
             position: fixed;
             z-index: 100;
             margin: 0;
-            /* We specify the properties to ensure transform and size move together */
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            /* This ensures the anchor point stays consistent */
-            transform-origin: center center;
+            transform: translate(0, 0); /* Start with no translation */
             pointer-events: none;
         }
 
         .card.is-expanded {
             top: 50% !important;
             left: 50% !important;
-            transform: translate(-50%, -50%) !important;
+            transform: translate(-50%, -50%) !important; /* Center it */
             width: 90vw !important;
             height: 80vh !important;
             max-width: 850px !important;
@@ -158,7 +157,7 @@
 
 <div class="intro-container">
     <h2>Welcome</h2>
-    <p>Select a card below to explore my development. Watch as the card flows from the grid into a detailed view.</p>
+    <p>Select a card below. It will flow from the grid to fill the screen smoothly.</p>
 </div>
 
 <div class="card-grid">
@@ -168,7 +167,7 @@
         <h3>Learning Experience</h3>
         <div class="full-content">
             <h2>Detailed Reflection</h2>
-            <p>Your 1,200-word reflection content goes here. This layout allows for high readability while maintaining a cinematic feel.</p>
+            <p>Your content here. The transition is now locked to prevent any visual "pops" when returning to the grid.</p>
         </div>
     </div>
 
@@ -178,7 +177,7 @@
         <h3>Professionalism</h3>
         <div class="full-content">
             <h2>Workplace Readiness</h2>
-            <p>Details regarding career office sessions and future career strengths.</p>
+            <p>Reflecting on career office sessions and future strengths.</p>
         </div>
     </div>
 
@@ -188,7 +187,7 @@
         <h3>Collaboration</h3>
         <div class="full-content">
             <h2>Social Horizon</h2>
-            <p>Evidence of leadership, study groups, and extracurricular activities.</p>
+            <p>Evidence of leadership and study groups.</p>
         </div>
     </div>
 
@@ -198,7 +197,7 @@
         <h3>Future Roadmap</h3>
         <div class="full-content">
             <h2>Next Steps</h2>
-            <p>Reflecting on where this program leads next in your career.</p>
+            <p>Long-term career objectives.</p>
         </div>
     </div>
 </div>
@@ -214,15 +213,13 @@
         ghostCard = card;
         originalRect = card.getBoundingClientRect();
 
-        // 1. Ghost the original
         ghostCard.classList.add('is-ghost');
 
-        // 2. Create the floating clone
         activeFloatingCard = card.cloneNode(true);
         activeFloatingCard.classList.remove('is-ghost');
         activeFloatingCard.classList.add('is-floating');
         
-        // Match initial styles exactly
+        // Initial manual styles
         activeFloatingCard.style.top = originalRect.top + 'px';
         activeFloatingCard.style.left = originalRect.left + 'px';
         activeFloatingCard.style.width = originalRect.width + 'px';
@@ -230,14 +227,12 @@
         
         document.body.appendChild(activeFloatingCard);
         
-        // 3. Trigger expansion
         requestAnimationFrame(() => {
             document.getElementById('overlay').classList.add('active');
             activeFloatingCard.classList.add('is-expanded');
             document.body.style.overflow = 'hidden';
         });
 
-        // Close button listener on the clone
         activeFloatingCard.querySelector('.close-btn').onclick = (e) => {
             e.stopPropagation();
             closeActiveCard();
@@ -249,20 +244,18 @@
         
         document.getElementById('overlay').classList.remove('active');
         document.body.style.overflow = 'auto';
-    
-        // 1. Remove the expansion class
+
+        // THE FIX: Reset the transform via JS directly before removing the class
+        // This overrides the CSS 'translate(-50%, -50%)' instantly.
+        activeFloatingCard.style.setProperty('transform', 'translate(0, 0)', 'important');
         activeFloatingCard.classList.remove('is-expanded');
         
-        // 2. IMMEDIATELY reset the transform so it doesn't "pop" from the center
-        activeFloatingCard.style.transform = 'translate(0, 0)';
-        
-        // 3. Re-apply original position and size
+        // Return to grid coordinates
         activeFloatingCard.style.top = originalRect.top + 'px';
         activeFloatingCard.style.left = originalRect.left + 'px';
         activeFloatingCard.style.width = originalRect.width + 'px';
         activeFloatingCard.style.height = originalRect.height + 'px';
         
-        // 4. Clean up after the animation finishes
         setTimeout(() => {
             if (activeFloatingCard) {
                 activeFloatingCard.remove();
