@@ -19,7 +19,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         header {
@@ -79,24 +78,22 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s ease;
             position: relative;
+            box-sizing: border-box;
         }
 
-        /* The Ghost card helps keep the grid stable while the real card is floating */
         .card.is-ghost {
             visibility: hidden;
             pointer-events: none;
         }
 
-        /* THE FLOATING CARD STATE */
         .card.is-floating {
             position: fixed;
             z-index: 100;
             margin: 0;
-            /* Cubic bezier adjusted for a very soft landing */
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            transform: translate(0, 0); /* Locked at 0 to prevent jumping */
+            pointer-events: none; /* Ignore clicks during animation */
         }
 
         .card.is-expanded {
@@ -106,6 +103,7 @@
             width: 90vw !important;
             height: 80vh !important;
             max-width: 850px !important;
+            pointer-events: auto;
             cursor: default;
             box-shadow: 0 30px 60px rgba(0,0,0,0.2);
             justify-content: flex-start;
@@ -123,7 +121,7 @@
 
         .card.is-expanded .full-content {
             display: block;
-            animation: fadeIn 0.6s ease 0.4s forwards;
+            animation: fadeIn 0.4s ease 0.4s forwards;
         }
 
         .close-btn {
@@ -140,8 +138,8 @@
         .card.is-expanded .close-btn { opacity: 1; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .tag { background: #eef2ff; color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; }
@@ -153,12 +151,12 @@
 
 <header>
     <h1>Growth & Reflection</h1>
-    <p>Year-End Portfolio</p>
+    <p>Professional Portfolio</p>
 </header>
 
 <div class="intro-container">
     <h2>Welcome</h2>
-    <p>Click a card to see the growth animation. The card will expand from its grid position to become a full-screen reflection.</p>
+    <p>Select a card below to explore my development. Watch as the card flows from the grid into a detailed view.</p>
 </div>
 
 <div class="card-grid">
@@ -168,7 +166,7 @@
         <h3>Learning Experience</h3>
         <div class="full-content">
             <h2>Detailed Reflection</h2>
-            <p>Your content here. This transition ensures the user sees exactly where the information came from.</p>
+            <p>Your 1,200-word reflection content goes here. This layout allows for high readability while maintaining a cinematic feel.</p>
         </div>
     </div>
 
@@ -178,17 +176,17 @@
         <h3>Professionalism</h3>
         <div class="full-content">
             <h2>Workplace Readiness</h2>
-            <p>Reflecting on your employability and career office sessions.</p>
+            <p>Details regarding career office sessions and future career strengths.</p>
         </div>
     </div>
 
     <div class="card" onclick="expandCard(this)">
         <span class="close-btn" onclick="event.stopPropagation(); closeActiveCard()">&times;</span>
-        <span class="tag">Evidence</span>
-        <h3>Collaborative Work</h3>
+        <span class="tag">Social</span>
+        <h3>Collaboration</h3>
         <div class="full-content">
             <h2>Social Horizon</h2>
-            <p>Organizing study groups and other social skills.</p>
+            <p>Evidence of leadership, study groups, and extracurricular activities.</p>
         </div>
     </div>
 
@@ -197,70 +195,79 @@
         <span class="tag">Goals</span>
         <h3>Future Roadmap</h3>
         <div class="full-content">
-            <h2>Long-term Objectives</h2>
-            <p>Where you see yourself in the next year.</p>
+            <h2>Next Steps</h2>
+            <p>Reflecting on where this program leads next in your career.</p>
         </div>
     </div>
 </div>
 
 <script>
-    let activeCard = null;
+    let activeFloatingCard = null;
+    let ghostCard = null;
     let originalRect = null;
 
     function expandCard(card) {
-        if (activeCard) return;
+        if (activeFloatingCard) return;
 
-        activeCard = card;
+        ghostCard = card;
         originalRect = card.getBoundingClientRect();
 
-        // 1. Create a "ghost" to keep the grid from collapsing
-        card.classList.add('is-ghost');
+        // 1. Ghost the original
+        ghostCard.classList.add('is-ghost');
 
-        // 2. Prepare the real card to float
-        const floatingCard = card.cloneNode(true);
-        floatingCard.classList.remove('is-ghost');
-        floatingCard.classList.add('is-floating');
+        // 2. Create the floating clone
+        activeFloatingCard = card.cloneNode(true);
+        activeFloatingCard.classList.remove('is-ghost');
+        activeFloatingCard.classList.add('is-floating');
         
-        // Position it exactly over the original
-        floatingCard.style.top = originalRect.top + 'px';
-        floatingCard.style.left = originalRect.left + 'px';
-        floatingCard.style.width = originalRect.width + 'px';
-        floatingCard.style.height = originalRect.height + 'px';
+        // Match initial styles exactly
+        activeFloatingCard.style.top = originalRect.top + 'px';
+        activeFloatingCard.style.left = originalRect.left + 'px';
+        activeFloatingCard.style.width = originalRect.width + 'px';
+        activeFloatingCard.style.height = originalRect.height + 'px';
         
-        document.body.appendChild(floatingCard);
+        document.body.appendChild(activeFloatingCard);
         
-        // 3. Trigger the expansion
-        setTimeout(() => {
+        // 3. Trigger expansion
+        requestAnimationFrame(() => {
             document.getElementById('overlay').classList.add('active');
-            floatingCard.classList.add('is-expanded');
+            activeFloatingCard.classList.add('is-expanded');
             document.body.style.overflow = 'hidden';
-        }, 10);
+        });
 
-        // Link the close button of the clone
-        floatingCard.querySelector('.close-btn').onclick = (e) => {
+        // Close button listener on the clone
+        activeFloatingCard.querySelector('.close-btn').onclick = (e) => {
             e.stopPropagation();
-            closeActiveCard(floatingCard);
+            closeActiveCard();
         };
     }
 
-    function closeActiveCard(floatingCard) {
-        if (!floatingCard) floatingCard = document.querySelector('.card.is-floating');
+    function closeActiveCard() {
+        if (!activeFloatingCard) return;
         
-        // 1. Shrink back to original position
-        floatingCard.classList.remove('is-expanded');
-        floatingCard.style.top = originalRect.top + 'px';
-        floatingCard.style.left = originalRect.left + 'px';
-        floatingCard.style.width = originalRect.width + 'px';
-        floatingCard.style.height = originalRect.height + 'px';
-        
+        // Hide overlay and re-enable scroll
         document.getElementById('overlay').classList.remove('active');
+        document.body.style.overflow = 'auto';
 
-        // 2. After animation finishes, clean up
+        // 1. Remove the expansion class so it returns to absolute coordinates
+        activeFloatingCard.classList.remove('is-expanded');
+        
+        // 2. Re-apply original rect coordinates (this is what creates the smooth "return")
+        activeFloatingCard.style.top = originalRect.top + 'px';
+        activeFloatingCard.style.left = originalRect.left + 'px';
+        activeFloatingCard.style.width = originalRect.width + 'px';
+        activeFloatingCard.style.height = originalRect.height + 'px';
+        
+        // 3. Clean up after the 0.8s animation
         setTimeout(() => {
-            floatingCard.remove();
-            activeCard.classList.remove('is-ghost');
-            activeCard = null;
-            document.body.style.overflow = 'auto';
+            if (activeFloatingCard) {
+                activeFloatingCard.remove();
+                activeFloatingCard = null;
+            }
+            if (ghostCard) {
+                ghostCard.classList.remove('is-ghost');
+                ghostCard = null;
+            }
         }, 800);
     }
 </script>
