@@ -20,7 +20,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            /* Prevents the scrollbar from appearing/disappearing and shifting the layout */
+            overflow-y: scroll; 
         }
 
         header {
@@ -47,27 +48,28 @@
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-auto-flow: dense; /* Crucial: fills gaps when cards move */
-            gap: 20px;
+            grid-auto-flow: dense;
+            gap: 25px;
             max-width: 1200px;
             width: 95%;
             margin: 40px auto 100px auto;
-            transition: all 0.5s ease-in-out;
+            /* This prevents the page from jumping up/down when cards resize */
+            min-height: 800px; 
+            transition: all 0.6s ease-in-out;
         }
 
-        /* THE CARD BASE */
         .card {
-            perspective: 1000px;
+            perspective: 1500px;
             height: 250px;
             cursor: pointer;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* WHEN ENLARGED: It takes up 2 columns and 2 rows */
+        /* Expansion Logic */
         .card.is-expanded {
             grid-column: span 2;
             grid-row: span 2;
-            height: 520px;
+            height: 525px;
         }
 
         .card-inner {
@@ -78,7 +80,6 @@
             transform-style: preserve-3d;
         }
 
-        /* The Flip Animation */
         .card.is-flipped .card-inner {
             transform: rotateY(180deg);
         }
@@ -88,20 +89,20 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 24px;
+            padding: 35px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
         .card-front {
             background: white;
             border-top: 8px solid var(--primary);
+            justify-content: center;
+            align-items: center;
         }
 
         .card-back {
@@ -112,20 +113,15 @@
             border-top: 8px solid var(--secondary);
         }
 
-        /* Content Styling */
-        h3 { margin: 10px 0; color: var(--primary); font-size: 1.5rem; }
-        .evidence-tag { background: #e0e7ff; color: var(--primary); padding: 6px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; }
+        /* Typography */
+        h3 { margin: 10px 0; color: var(--primary); font-size: 1.6rem; }
+        .evidence-tag { background: #e0e7ff; color: var(--primary); padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px;}
         
-        .full-text { display: none; margin-top: 15px; line-height: 1.6; text-align: left; }
-        .card.is-expanded .full-text { display: block; }
-        .card.is-expanded .evidence-tag { background: #ffe4e6; color: var(--secondary); }
+        .full-text { opacity: 0; transition: opacity 0.4s ease; margin-top: 20px; line-height: 1.7; }
+        .card.is-expanded .full-text { opacity: 1; }
 
-        /* Responsive tweak for small screens */
         @media (max-width: 768px) {
-            .card.is-expanded {
-                grid-column: span 1;
-                height: 600px;
-            }
+            .card.is-expanded { grid-column: span 1; height: 650px; }
         }
     </style>
 </head>
@@ -133,30 +129,30 @@
 
 <header>
     <h1>Growth & Professionalism</h1>
-    <p>A Reflective Portfolio</p>
+    <p>Interactive Portfolio & Reflections</p>
 </header>
 
 <div class="intro-container">
     <h2>Introduction</h2>
-    <p>This is my professional journey through the program. Click any card below to flip it and explore my reflections and evidence in detail. Each card expands to tell a deeper story.</p>
+    <p>Welcome. Explore my journey by selecting a card below. Each card flips and expands within the grid to reveal my learning reflections and supporting evidence without moving you away from your current view.</p>
 </div>
 
-<div class="card-grid" id="mainGrid">
+<div class="card-grid">
     
     <!-- Card 1 -->
     <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
             <div class="card-front">
+                <span class="evidence-tag">Metacognition</span>
                 <h3>Learning Strategies</h3>
-                <span class="evidence-tag">Metacognitive Skill</span>
-                <p>Click to expand</p>
+                <p style="color: #888;">View Full Story ↗</p>
             </div>
             <div class="card-back">
-                <h3>Learning Strategies</h3>
-                <span class="evidence-tag">Detailed Reflection</span>
+                <h3>Reflective Analysis</h3>
+                <hr style="width:100%; opacity: 0.1;">
                 <div class="full-text">
-                    <p><strong>Initial Plan vs. Reality:</strong> This is where your text goes. Because the card is now double the size, you have plenty of room to write.</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.  Donec quis lacinia eros. Mauris faucibus sit amet placerat. This content flows beautifully as the card expands and pushes others aside.</p>
+                    <p><strong>Learning Plan Integration:</strong> In this section, you can detail how your actual progress aligned with your initial 1,200-word goals. The expansion happens entirely within the grid's flow.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This layout allows your supervisor to stay focused on the content while appreciating the technical execution of the portfolio.</p>
                 </div>
             </div>
         </div>
@@ -166,16 +162,14 @@
     <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
             <div class="card-front">
-                <h3>Project Showcase</h3>
-                <span class="evidence-tag">Evidence: Presentation</span>
-                <p>Click to expand</p>
+                <span class="evidence-tag">Professionalism</span>
+                <h3>Career Readiness</h3>
+                <p style="color: #888;">Explore ↗</p>
             </div>
             <div class="card-back">
-                <h3>Project Showcase</h3>
-                <span class="evidence-tag">Evidence Item</span>
+                <h3>Career Development</h3>
                 <div class="full-text">
-                    <p>Details about your best presentation or article. You can even include links or images here.</p>
-                    <img src="https://via.placeholder.com/400x200" style="width:100%; border-radius:10px;" alt="Work Example">
+                    <p>Discussion of career office sessions and future professional strengths goes here.</p>
                 </div>
             </div>
         </div>
@@ -185,14 +179,15 @@
     <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
             <div class="card-front">
-                <h3>Career Readiness</h3>
-                <span class="evidence-tag">Professional Skill</span>
-                <p>Click to expand</p>
+                <span class="evidence-tag">Show & Tell</span>
+                <h3>Project Evidence</h3>
+                <p style="color: #888;">Open Gallery ↗</p>
             </div>
             <div class="card-back">
-                <h3>Career Readiness</h3>
+                <h3>Evidence Gallery</h3>
                 <div class="full-text">
-                    <p>Reflecting on the career office sessions and my future trajectory in the professional field.</p>
+                    <p>Upload screenshots of your posters or PowerPoint slides here to demonstrate your best work.</p>
+                    <img src="https://via.placeholder.com/400x200" style="width:100%; border-radius:12px;" alt="Work">
                 </div>
             </div>
         </div>
@@ -202,14 +197,14 @@
     <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
             <div class="card-front">
-                <h3>Social Horizon</h3>
-                <span class="evidence-tag">Extracurricular</span>
-                <p>Click to expand</p>
+                <span class="evidence-tag">Social</span>
+                <h3>Leadership</h3>
+                <p style="color: #888;">Read More ↗</p>
             </div>
             <div class="card-back">
-                <h3>Social Horizon</h3>
+                <h3>Leadership Skills</h3>
                 <div class="full-text">
-                    <p>Evidence of leadership, study groups, or side jobs that demonstrate my social stance.</p>
+                    <p>Evidence of extracurricular activities, organizing study groups, or side jobs.</p>
                 </div>
             </div>
         </div>
@@ -219,22 +214,19 @@
 
 <script>
     function toggleCard(card) {
-        // If there's another card expanded, close it first for a clean look
-        document.querySelectorAll('.card').forEach(c => {
-            if (c !== card) {
-                c.classList.remove('is-expanded');
-                c.classList.remove('is-flipped');
-            }
-        });
+        // Find if another card is already expanded
+        const alreadyExpanded = document.querySelector('.card.is-expanded');
+        
+        if (alreadyExpanded && alreadyExpanded !== card) {
+            alreadyExpanded.classList.remove('is-expanded');
+            alreadyExpanded.classList.remove('is-flipped');
+        }
 
-        // Toggle the clicked card
+        // Apply flip and expansion simultaneously
         card.classList.toggle('is-flipped');
         card.classList.toggle('is-expanded');
         
-        // Smooth scroll to the expanded card
-        setTimeout(() => {
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 500);
+        // Note: I removed card.scrollIntoView to ensure the page doesn't jump.
     }
 </script>
 
