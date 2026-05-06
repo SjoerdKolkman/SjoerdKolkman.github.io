@@ -91,9 +91,11 @@
             position: fixed;
             z-index: 100;
             margin: 0;
+            /* We specify the properties to ensure transform and size move together */
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translate(0, 0); /* Locked at 0 to prevent jumping */
-            pointer-events: none; /* Ignore clicks during animation */
+            /* This ensures the anchor point stays consistent */
+            transform-origin: center center;
+            pointer-events: none;
         }
 
         .card.is-expanded {
@@ -245,20 +247,22 @@
     function closeActiveCard() {
         if (!activeFloatingCard) return;
         
-        // Hide overlay and re-enable scroll
         document.getElementById('overlay').classList.remove('active');
         document.body.style.overflow = 'auto';
-
-        // 1. Remove the expansion class so it returns to absolute coordinates
+    
+        // 1. Remove the expansion class
         activeFloatingCard.classList.remove('is-expanded');
         
-        // 2. Re-apply original rect coordinates (this is what creates the smooth "return")
+        // 2. IMMEDIATELY reset the transform so it doesn't "pop" from the center
+        activeFloatingCard.style.transform = 'translate(0, 0)';
+        
+        // 3. Re-apply original position and size
         activeFloatingCard.style.top = originalRect.top + 'px';
         activeFloatingCard.style.left = originalRect.left + 'px';
         activeFloatingCard.style.width = originalRect.width + 'px';
         activeFloatingCard.style.height = originalRect.height + 'px';
         
-        // 3. Clean up after the 0.8s animation
+        // 4. Clean up after the animation finishes
         setTimeout(() => {
             if (activeFloatingCard) {
                 activeFloatingCard.remove();
