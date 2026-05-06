@@ -43,7 +43,6 @@
             z-index: 5;
         }
 
-        /* THE GRID */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -53,16 +52,15 @@
             margin-bottom: 100px;
         }
 
-        /* THE BACKDROP */
         #overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(6px);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.5s ease;
+            transition: all 0.7s ease; /* Slightly slower fade */
             z-index: 50;
         }
 
@@ -71,7 +69,6 @@
             visibility: visible;
         }
 
-        /* THE CARD */
         .card {
             background: white;
             height: 250px;
@@ -79,7 +76,7 @@
             padding: 30px;
             cursor: pointer;
             position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -94,30 +91,30 @@
             box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
-        /* THE ACTIVE STATE (THE FLOW) */
+        /* THE REFINED FLOW ANIMATION */
         .card.active {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(1.1);
+            transform: translate(-50%, -50%) scale(1.05);
             width: 90vw;
             height: 80vh;
-            max-width: 800px;
+            max-width: 850px;
             z-index: 100;
             cursor: default;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             justify-content: flex-start;
             overflow-y: auto;
-            /* This gives it that "slow flow" feel */
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            
+            /* Slower timing (0.8s) and a gentler 'bounce' (1.1 instead of 1.56) */
+            transition: all 0.8s cubic-bezier(0.34, 1.1, 0.64, 1);
         }
 
-        /* TEXT VISIBILITY */
         .card h3 { 
             color: var(--primary); 
             font-size: 1.5rem; 
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
+            margin: 0;
+            transition: all 0.4s ease;
         }
 
         .card .full-content {
@@ -132,28 +129,30 @@
         .card.active .full-content {
             display: block;
             opacity: 1;
-            animation: fadeIn 0.8s ease forwards;
+            animation: fadeIn 1s ease forwards;
         }
 
         .card.active h3 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            margin-top: 10px;
         }
 
         .close-btn {
             display: none;
             position: absolute;
-            top: 20px;
+            top: 25px;
             right: 25px;
-            font-size: 24px;
+            font-size: 30px;
             cursor: pointer;
-            color: #94a3b8;
+            color: #cbd5e1;
+            line-height: 1;
         }
 
         .card.active .close-btn { display: block; }
+        .close-btn:hover { color: var(--secondary); }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -174,58 +173,53 @@
 
 <header>
     <h1>Portfolio Reflection</h1>
-    <p>Year-End Evaluation</p>
+    <p>Professional Development & Skills</p>
 </header>
 
 <div class="intro-container">
     <h2>Introduction</h2>
-    <p>Select a skill area below to view my reflections and evidence. The card will expand to provide a comprehensive look at my professional development and learning journey.</p>
+    <p>This is my professional journey. Click a card to focus on a specific skill area. Each section includes my self-reflection and the evidence required for the final assessment.</p>
 </div>
 
 <div class="card-grid">
-    <!-- Card 1 -->
     <div class="card" onclick="openCard(this)">
         <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Strategy</span>
+        <span class="tag">Topic 1</span>
         <h3>Learning Experience</h3>
         <div class="full-content">
-            <hr>
-            <p><strong>Reflection (~1,200 Words):</strong> This is where you describe your learning strategies and how they evolved relative to your initial plan. By detaching from the grid and moving to the center, this card becomes a focused reading environment.</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+            <hr style="opacity: 0.1; margin: 20px 0;">
+            <p><strong>Reflection Overview:</strong> Your 1,200-word analysis goes here. Discuss your strategies and how they match your learning plan.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
         </div>
     </div>
 
-    <!-- Card 2 -->
     <div class="card" onclick="openCard(this)">
         <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Evidence</span>
+        <span class="tag">Topic 2</span>
         <h3>Professional Skills</h3>
         <div class="full-content">
-            <hr>
-            <p>Details about career sessions, leadership, and workplace readiness.</p>
-            <p>You can insert images or evidence of your PowerPoint presentations here.</p>
+            <hr style="opacity: 0.1; margin: 20px 0;">
+            <p>Details about your employability, career office sessions, and workplace strengths.</p>
         </div>
     </div>
 
-    <!-- Card 3 -->
     <div class="card" onclick="openCard(this)">
         <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Evidence</span>
-        <h3>Collaborative Work</h3>
+        <span class="tag">Topic 3</span>
+        <h3>Metacognitive Growth</h3>
         <div class="full-content">
-            <hr>
-            <p>Evidence of organizing study groups or side jobs that highlight your social stance.</p>
+            <hr style="opacity: 0.1; margin: 20px 0;">
+            <p>Evidence of how you reflect on your own learning process and adapt to new challenges.</p>
         </div>
     </div>
 
-    <!-- Card 4 -->
     <div class="card" onclick="openCard(this)">
         <span class="close-btn" onclick="event.stopPropagation(); closeCard()">&times;</span>
-        <span class="tag">Goals</span>
-        <h3>Future Horizon</h3>
+        <span class="tag">Topic 4</span>
+        <h3>Evidence Gallery</h3>
         <div class="full-content">
-            <hr>
-            <p>How your strengths and metacognitive skills prepare you for your future career.</p>
+            <hr style="opacity: 0.1; margin: 20px 0;">
+            <p>Place for your 4-10 pieces of evidence (Posters, PPTs, Videos, etc.).</p>
         </div>
     </div>
 </div>
@@ -233,12 +227,8 @@
 <script>
     function openCard(card) {
         if (card.classList.contains('active')) return;
-
         const overlay = document.getElementById('overlay');
-        
-        // Disable scrolling on the main body
         document.body.style.overflow = 'hidden';
-        
         overlay.classList.add('active');
         card.classList.add('active');
     }
@@ -246,14 +236,10 @@
     function closeCard() {
         const activeCard = document.querySelector('.card.active');
         const overlay = document.getElementById('overlay');
-        
         if (activeCard) {
             activeCard.classList.remove('active');
         }
-        
         overlay.classList.remove('active');
-        
-        // Re-enable scrolling
         document.body.style.overflow = 'auto';
     }
 </script>
