@@ -40,60 +40,76 @@
             z-index: 10;
         }
         
-        /* --- THE NEW ANIMATED CARD CSS --- */
+        /* The Container for the Grid */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             max-width: 1100px;
             width: 90%;
-            margin: 50px 0 80px 0;
+            margin: 50px auto;
         }
         
         .card {
-            perspective: 1000px;
+            position: relative;
             height: 220px;
             cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+        
+        /* The Secret Sauce: The "Expanding" State */
+        .card.is-expanded {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw;
+            height: 90vh;
+            max-width: 800px;
+            z-index: 1000;
+            cursor: default;
         }
         
         .card-inner {
-            position: relative;
             width: 100%;
             height: 100%;
-            text-align: center;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-        }
-        
-        /* This class is added by JavaScript on click */
-        .card.is-flipped .card-inner {
-            transform: rotateY(180deg) scale(1.05);
-        }
-        
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 15px;
-            padding: 20px;
-            box-sizing: border-box;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
-        .card-front {
-            background: white;
-            border-bottom: 6px solid var(--primary);
+        /* Hide content until expanded */
+        .expanded-content {
+            opacity: 0;
+            padding: 40px;
+            overflow-y: auto;
+            display: none;
+            transition: opacity 0.3s ease;
         }
         
-        .card-back {
-            background: var(--primary);
-            color: white;
-            transform: rotateY(180deg);
+        .card.is-expanded .expanded-content {
+            display: block;
+            opacity: 1;
+        }
+        
+        .card.is-expanded .card-front {
+            display: none; /* Hide the small title once big */
+        }
+        
+        /* Dark background overlay */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 999;
         }
         
         /* --- THE BOUNCY MODAL CSS --- */
@@ -149,136 +165,106 @@
 </div>
 
 <h2 class="grid-title">My Reflection & Evidence</h2>
+<div id="overlay" onclick="closeAllCards()"></div>
+
 <div class="card-grid">
     <!-- Card 1 -->
-    <div class="card" onclick="openModal('topic1', this)">
+    <div class="card" onclick="expandCard(this)">
         <div class="card-inner">
-            <!-- Front of Card -->
+            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Learning Strategies</h3>
                 <span class="evidence-tag">Metacognitive Skill</span>
             </div>
-            <!-- Back of Card (Visible during the flip) -->
-            <div class="card-back">
-                <h3>Opening...</h3>
+            
+            <!-- What you see after it grows -->
+            <div class="expanded-content">
+                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
+                <h2>Learning Strategies & Growth</h2>
+                <hr>
+                <p>Your 1,200-word reflection content starts here...</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
             </div>
         </div>
     </div>
-
     <!-- Card 2 -->
-    <div class="card" onclick="openModal('topic2', this)">
+    <div class="card" onclick="expandCard(this)">
         <div class="card-inner">
-            <!-- Front of Card -->
+            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Career Readiness</h3>
                 <span class="evidence-tag">Metacognitive Skill</span>
             </div>
-            <!-- Back of Card (Visible during the flip) -->
-            <div class="card-back">
-                <h3>Opening...</h3>
+            
+            <!-- What you see after it grows -->
+            <div class="expanded-content">
+                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
+                <h2>Career Readiness</h2>
+                <hr>
+                <p>Your 1,200-word reflection content starts here...</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
             </div>
         </div>
     </div>
-
     <!-- Card 3 -->
-    <div class="card" onclick="openModal('topic1', this)">
+    <div class="card" onclick="expandCard(this)">
         <div class="card-inner">
-            <!-- Front of Card -->
+            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Project Showcase</h3>
                 <span class="evidence-tag">Metacognitive Skill</span>
             </div>
-            <!-- Back of Card (Visible during the flip) -->
-            <div class="card-back">
-                <h3>Opening...</h3>
+            
+            <!-- What you see after it grows -->
+            <div class="expanded-content">
+                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
+                <h2>Project Showcase</h2>
+                <hr>
+                <p>Your 1,200-word reflection content starts here...</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
             </div>
         </div>
     </div>
-
     <!-- Card 4 -->
-    <div class="card" onclick="openModal('topic1', this)">
+    <div class="card" onclick="expandCard(this)">
         <div class="card-inner">
-            <!-- Front of Card -->
+            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Leadership Experience</h3>
                 <span class="evidence-tag">Metacognitive Skill</span>
             </div>
-            <!-- Back of Card (Visible during the flip) -->
-            <div class="card-back">
-                <h3>Opening...</h3>
+            
+            <!-- What you see after it grows -->
+            <div class="expanded-content">
+                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
+                <h2>Leadership Experience</h2>
+                <hr>
+                <p>Your 1,200-word reflection content starts here...</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modals -->
-<div id="topic1" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('topic1')">&times;</span>
-        <h2>Learning Strategies & Growth</h2>
-        <p><strong>Reflective Insight:</strong> [Add your reflection here about how you adapted your learning plan].</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <img src="https://via.placeholder.com/600x300" style="width:100%; border-radius:10px; margin-top:20px;" alt="Evidence">
-    </div>
-</div>
-
-<div id="topic2" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('topic2')">&times;</span>
-        <h2>Career Readiness</h2>
-        <p>Content regarding your career office sessions and future goals go here...</p>
-    </div>
-</div>
-
-<div id="topic3" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('topic3')">&times;</span>
-        <h2>Project Showcase</h2>
-        <p>This is where you can embed a link to your PowerPoint, a PDF of your poster, or a video pitch.</p>
-    </div>
-</div>
-
-<div id="topic4" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('topic4')">&times;</span>
-        <h2>Leadership</h2>
-        <p>Evidence of your ability to organize, lead, and collaborate.</p>
-    </div>
-</div>
-
 <script>
-    function openModal(id, cardElement) {
-        // Start the flip
-        cardElement.classList.add('is-flipped');
+    function expandCard(card) {
+        if (card.classList.contains('is-expanded')) return;
     
-        // Wait 300ms (halfway through the flip) to trigger the modal
-        setTimeout(() => {
-            const modal = document.getElementById(id);
-            modal.style.display = "block";
-            
-            // Brief delay to allow CSS to animate the scale-up
-            setTimeout(() => {
-                modal.classList.add('is-visible');
-            }, 50);
-        }, 300); 
-    }
-    
-    function closeModal(id) {
-        const modal = document.getElementById(id);
-        modal.classList.remove('is-visible');
+        const overlay = document.getElementById('overlay');
+        overlay.style.display = 'block';
         
-        // Hide modal and un-flip card after fade-out finish
-        setTimeout(() => {
-            modal.style.display = "none";
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('is-flipped'));
-        }, 400);
+        // Add the expanded class to trigger the CSS transition
+        card.classList.add('is-expanded');
     }
     
-    // Close if user clicks the dark background
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            closeModal(event.target.id);
+    function closeAllCards() {
+        const expandedCard = document.querySelector('.card.is-expanded');
+        const overlay = document.getElementById('overlay');
+        
+        if (expandedCard) {
+            expandedCard.classList.remove('is-expanded');
         }
+        overlay.style.display = 'none';
     }
 </script>
 
