@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | My Journey</title>
+    <title>Professional Portfolio | My Journey</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -11,145 +11,122 @@
             --bg: #f8fafc;
             --dark: #1e293b;
         }
-        
+
         body { 
             font-family: 'Segoe UI', sans-serif; 
             background-color: var(--bg); 
+            color: var(--dark);
             margin: 0; 
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
         }
-        
+
         header {
             width: 100%;
-            padding: 60px 20px;
+            padding: 80px 20px;
             text-align: center;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
-        
+
         .intro-container {
             max-width: 800px;
-            margin: -40px 20px 40px 20px;
+            margin: -50px 20px 40px 20px;
             background: white;
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
             z-index: 10;
         }
-        
-        /* The Container for the Grid */
+
+        /* THE GRID */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            max-width: 1100px;
-            width: 90%;
-            margin: 50px auto;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-auto-flow: dense; /* Crucial: fills gaps when cards move */
+            gap: 20px;
+            max-width: 1200px;
+            width: 95%;
+            margin: 40px auto 100px auto;
+            transition: all 0.5s ease-in-out;
         }
-        
+
+        /* THE CARD BASE */
         .card {
-            position: relative;
-            height: 220px;
+            perspective: 1000px;
+            height: 250px;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        /* The Secret Sauce: The "Expanding" State */
+
+        /* WHEN ENLARGED: It takes up 2 columns and 2 rows */
         .card.is-expanded {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90vw;
-            height: 90vh;
-            max-width: 800px;
-            z-index: 1000;
-            cursor: default;
+            grid-column: span 2;
+            grid-row: span 2;
+            height: 520px;
         }
-        
+
         .card-inner {
+            position: relative;
             width: 100%;
             height: 100%;
-            background: white;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        /* The Flip Animation */
+        .card.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        
-        /* Hide content until expanded */
-        .expanded-content {
-            opacity: 0;
-            padding: 40px;
+
+        .card-front {
+            background: white;
+            border-top: 8px solid var(--primary);
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            justify-content: flex-start;
             overflow-y: auto;
-            display: none;
-            transition: opacity 0.3s ease;
+            border-top: 8px solid var(--secondary);
         }
+
+        /* Content Styling */
+        h3 { margin: 10px 0; color: var(--primary); font-size: 1.5rem; }
+        .evidence-tag { background: #e0e7ff; color: var(--primary); padding: 6px 15px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; }
         
-        .card.is-expanded .expanded-content {
-            display: block;
-            opacity: 1;
+        .full-text { display: none; margin-top: 15px; line-height: 1.6; text-align: left; }
+        .card.is-expanded .full-text { display: block; }
+        .card.is-expanded .evidence-tag { background: #ffe4e6; color: var(--secondary); }
+
+        /* Responsive tweak for small screens */
+        @media (max-width: 768px) {
+            .card.is-expanded {
+                grid-column: span 1;
+                height: 600px;
+            }
         }
-        
-        .card.is-expanded .card-front {
-            display: none; /* Hide the small title once big */
-        }
-        
-        /* Dark background overlay */
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            z-index: 999;
-        }
-        
-        /* --- THE BOUNCY MODAL CSS --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(8px);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        
-        .modal.is-visible {
-            display: block;
-            opacity: 1;
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 5vh auto;
-            padding: 40px;
-            width: 85%;
-            max-width: 800px;
-            border-radius: 24px;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            transform: scale(0.7) translateY(50px);
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .modal.is-visible .modal-content {
-            transform: scale(1) translateY(0);
-        }
-        
-        .close-btn { font-size: 28px; cursor: pointer; float: right; color: #999; }
-        .evidence-tag { background: #e0e7ff; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -161,110 +138,103 @@
 
 <div class="intro-container">
     <h2>Introduction</h2>
-    <p>Welcome to my professional story. This portfolio isn't just a collection of grades, but a reflection of my journey through the program. Below, you will find interactive "Story Cards" that detail my learning strategies and professional growth, alongside specific evidence of my work.</p>
+    <p>This is my professional journey through the program. Click any card below to flip it and explore my reflections and evidence in detail. Each card expands to tell a deeper story.</p>
 </div>
 
-<h2 class="grid-title">My Reflection & Evidence</h2>
-<div id="overlay" onclick="closeAllCards()"></div>
-
-<div class="card-grid">
+<div class="card-grid" id="mainGrid">
+    
     <!-- Card 1 -->
-    <div class="card" onclick="expandCard(this)">
+    <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
-            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Learning Strategies</h3>
                 <span class="evidence-tag">Metacognitive Skill</span>
+                <p>Click to expand</p>
             </div>
-            
-            <!-- What you see after it grows -->
-            <div class="expanded-content">
-                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
-                <h2>Learning Strategies & Growth</h2>
-                <hr>
-                <p>Your 1,200-word reflection content starts here...</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
+            <div class="card-back">
+                <h3>Learning Strategies</h3>
+                <span class="evidence-tag">Detailed Reflection</span>
+                <div class="full-text">
+                    <p><strong>Initial Plan vs. Reality:</strong> This is where your text goes. Because the card is now double the size, you have plenty of room to write.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.  Donec quis lacinia eros. Mauris faucibus sit amet placerat. This content flows beautifully as the card expands and pushes others aside.</p>
+                </div>
             </div>
         </div>
     </div>
+
     <!-- Card 2 -->
-    <div class="card" onclick="expandCard(this)">
+    <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
-            <!-- What you see in the grid -->
-            <div class="card-front">
-                <h3>Career Readiness</h3>
-                <span class="evidence-tag">Metacognitive Skill</span>
-            </div>
-            
-            <!-- What you see after it grows -->
-            <div class="expanded-content">
-                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
-                <h2>Career Readiness</h2>
-                <hr>
-                <p>Your 1,200-word reflection content starts here...</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
-            </div>
-        </div>
-    </div>
-    <!-- Card 3 -->
-    <div class="card" onclick="expandCard(this)">
-        <div class="card-inner">
-            <!-- What you see in the grid -->
             <div class="card-front">
                 <h3>Project Showcase</h3>
-                <span class="evidence-tag">Metacognitive Skill</span>
+                <span class="evidence-tag">Evidence: Presentation</span>
+                <p>Click to expand</p>
             </div>
-            
-            <!-- What you see after it grows -->
-            <div class="expanded-content">
-                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
-                <h2>Project Showcase</h2>
-                <hr>
-                <p>Your 1,200-word reflection content starts here...</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
+            <div class="card-back">
+                <h3>Project Showcase</h3>
+                <span class="evidence-tag">Evidence Item</span>
+                <div class="full-text">
+                    <p>Details about your best presentation or article. You can even include links or images here.</p>
+                    <img src="https://via.placeholder.com/400x200" style="width:100%; border-radius:10px;" alt="Work Example">
+                </div>
             </div>
         </div>
     </div>
-    <!-- Card 4 -->
-    <div class="card" onclick="expandCard(this)">
+
+    <!-- Card 3 -->
+    <div class="card" onclick="toggleCard(this)">
         <div class="card-inner">
-            <!-- What you see in the grid -->
             <div class="card-front">
-                <h3>Leadership Experience</h3>
-                <span class="evidence-tag">Metacognitive Skill</span>
+                <h3>Career Readiness</h3>
+                <span class="evidence-tag">Professional Skill</span>
+                <p>Click to expand</p>
             </div>
-            
-            <!-- What you see after it grows -->
-            <div class="expanded-content">
-                <span style="float:right; cursor:pointer;" onclick="event.stopPropagation(); closeAllCards();">✖</span>
-                <h2>Leadership Experience</h2>
-                <hr>
-                <p>Your 1,200-word reflection content starts here...</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This feels much more like a natural flow from the card to the full story.</p>
+            <div class="card-back">
+                <h3>Career Readiness</h3>
+                <div class="full-text">
+                    <p>Reflecting on the career office sessions and my future trajectory in the professional field.</p>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Card 4 -->
+    <div class="card" onclick="toggleCard(this)">
+        <div class="card-inner">
+            <div class="card-front">
+                <h3>Social Horizon</h3>
+                <span class="evidence-tag">Extracurricular</span>
+                <p>Click to expand</p>
+            </div>
+            <div class="card-back">
+                <h3>Social Horizon</h3>
+                <div class="full-text">
+                    <p>Evidence of leadership, study groups, or side jobs that demonstrate my social stance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    function expandCard(card) {
-        if (card.classList.contains('is-expanded')) return;
-    
-        const overlay = document.getElementById('overlay');
-        overlay.style.display = 'block';
+    function toggleCard(card) {
+        // If there's another card expanded, close it first for a clean look
+        document.querySelectorAll('.card').forEach(c => {
+            if (c !== card) {
+                c.classList.remove('is-expanded');
+                c.classList.remove('is-flipped');
+            }
+        });
+
+        // Toggle the clicked card
+        card.classList.toggle('is-flipped');
+        card.classList.toggle('is-expanded');
         
-        // Add the expanded class to trigger the CSS transition
-        card.classList.add('is-expanded');
-    }
-    
-    function closeAllCards() {
-        const expandedCard = document.querySelector('.card.is-expanded');
-        const overlay = document.getElementById('overlay');
-        
-        if (expandedCard) {
-            expandedCard.classList.remove('is-expanded');
-        }
-        overlay.style.display = 'none';
+        // Smooth scroll to the expanded card
+        setTimeout(() => {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 500);
     }
 </script>
 
